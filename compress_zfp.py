@@ -8,37 +8,15 @@ import math
 
 GOLD_DIR = "/zfs/fthpc/plascomcm/inputs/flowpastcylinder/palmetto_gold/"
 TOL = float(1E-6)
-ITER = 100
+ITER = 20
+
 
 # https://stackoverflow.com/questions/5862915/passing-numpy-arrays-to-a-c-function-for-input-and-output
 zfp_dll = ctypes.cdll.LoadLibrary('./zfp-0.5.1/examples/simple.dll')
 cycle = zfp_dll.cycle
-compress= zfp_dll.compress
-'''
-array = np.ones((8,8,8)).ravel()
-for k in xrange(8):
-	for j in xrange(8):
-		for i in xrange(8):
-			x = 2.0 * i / 8
-			y = 2.0 * j / 8
-			z = 2.0 * k / 8
-			array[i+8*(j+8*k)] = math.exp(-(x * x + y * y + z * z))
-
-array1 = np.zeros((8,8,8)).ravel()
-cycle(ctypes.c_void_p(array.ctypes.data), 8,8,8,ctypes.c_double(TOL), 1, ctypes.c_void_p(array1.ctypes.data))
-
-for k in xrange(8):
-  for j in xrange(8):
-    for i in xrange(8):
-			print str(array[i+8*(j+8*k)])
-print"\n--------------\n"
-for k in xrange(8):
-  for j in xrange(8):
-    for i in xrange(8):
-			print str(array1[i+8*(j+8*k)])
-'''
 
 '''
+[context deleted 12/31]
 Above appears to work, below does not. 
 I suspect this may be due to some sort of data organization concerning long arrays 
 
@@ -68,20 +46,22 @@ def copy_3d_array(a):
 # create p3d reader
 p3d = P3D.PLOT3D_FILE()
 
-# test with grid0 var0
-fname = GOLD_DIR + "/RocFlo-CM.00010000.q"
+fname = GOLD_DIR + "/RocFlo-CM.00000020.q"
 p3d.read_file(fname)
-grid = p3d.get_var(0,0)
 
-
-nx,ny,nz,iArr = copy_3d_array(grid)
-oArr = np.zeros(nx*ny*nz)
-
-#cycle(double* array, int nx, int ny, int nz, double tolerance, int iterations, double* output)
-cycle(ctypes.c_void_p(iArr.ctypes.data), nx, ny, nz, ctypes.c_double(TOL), ITER, ctypes.c_void_p(oArr.ctypes.data))
-
-print iArr
-print "------------------"
-print oArr
+print "File: "+ fname
+for g in xrange(2):
+	for cv in xrange(5):
+		print "\n==========================="
+		print "Compressing CV=           " + str(cv)
+		print""
+		grid = p3d.get_var(g,cv)
+		nx,ny,nz,iArr = copy_3d_array(grid)
+		oArr = np.zeros(nx*ny*nz)
+		cycle(ctypes.c_void_p(iArr.ctypes.data), nx, ny, nz, ctypes.c_double(TOL), ITER, ctypes.c_void_p(oArr.ctypes.data))
+		print "===========================\n"
+		#print iArr
+		#print "------------------"
+		#print oArr
 
 

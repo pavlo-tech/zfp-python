@@ -1,3 +1,4 @@
+import os
 import sys
 sys.path.insert(0, './fortranfile-0.2.1')
 sys.path.insert(0, './PyPLOT3D')
@@ -46,22 +47,24 @@ def copy_3d_array(a):
 # create p3d reader
 p3d = P3D.PLOT3D_FILE()
 
-fname = GOLD_DIR + "/RocFlo-CM.00000020.q"
-p3d.read_file(fname)
+qfiles = [(GOLD_DIR + fileName) for fileName in os.listdir(GOLD_DIR) if fileName[-1] == "q" and fileName != "RocFlo-CM.00000000.q"]
+qfiles.sort()
 
-print "File: "+ fname
-for g in xrange(2):
-	for cv in xrange(5):
-		print "\n==========================="
-		print "Compressing CV=           " + str(cv)
-		print""
-		grid = p3d.get_var(g,cv)
-		nx,ny,nz,iArr = copy_3d_array(grid)
-		oArr = np.zeros(nx*ny*nz)
-		cycle(ctypes.c_void_p(iArr.ctypes.data), nx, ny, nz, ctypes.c_double(TOL), ITER, ctypes.c_void_p(oArr.ctypes.data))
-		print "===========================\n"
-		#print iArr
-		#print "------------------"
-		#print oArr
+for fname in qfiles:
+	p3d.read_file(fname)
+	print "File: " + fname
+	for g in xrange(2):
+		for cv in xrange(5):
+			print "\n============================="
+			print "Compressing CV=           " + str(cv)
+			grid = p3d.get_var(g,cv)
+			nx,ny,nz,iArr = copy_3d_array(grid)
+			print "Shape of array          " + str(nx) + "          " + str(ny) + "           " + str(nz)
+			oArr = np.zeros(nx*ny*nz)
+			cycle(ctypes.c_void_p(iArr.ctypes.data), nx, ny, nz, ctypes.c_double(TOL), ITER, ctypes.c_void_p(oArr.ctypes.data))
+			#print iArr
+			#print "------------------"
+			#print oArr
+			print "=============================\n"
 
 

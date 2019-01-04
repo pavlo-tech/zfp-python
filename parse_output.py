@@ -39,4 +39,4 @@ def parse_output(inputFileName, outputFileName):
 
 	np.save(outputFileName, CompressionValues)
 
-
+parse_output(sys.argv[1],sys.argv[2])

@@ -1,0 +1,26 @@
+/zfs/fthpc/plascomcm/inputs/pavlo_runs/plascomcm_run_data/1E-6/zfp-0.5.1/20.txt
+DONE
+/zfs/fthpc/plascomcm/inputs/pavlo_runs/plascomcm_run_data/1E-7/zfp-0.5.1/20.txt
+DONE
+/zfs/fthpc/plascomcm/inputs/pavlo_runs/plascomcm_run_data/1E-8/zfp-0.5.1/20.txt
+DONE
+/zfs/fthpc/plascomcm/inputs/pavlo_runs/plascomcm_run_data/1E-9/zfp-0.5.1/20.txt
+DONE
+/zfs/fthpc/plascomcm/inputs/pavlo_runs/plascomcm_run_data/1E-10/zfp-0.5.1/20.txt
+DONE
+ 
+ 
++------------------------------------------+ 
+| PALMETTO CLUSTER PBS RESOURCES REQUESTED | 
++------------------------------------------+ 
+ 
+mem=12gb,ncpus=40,walltime=24:00:00
+ 
+ 
++-------------------------------------+ 
+| PALMETTO CLUSTER PBS RESOURCES USED | 
++-------------------------------------+ 
+ 
+cpupercent=102,cput=00:55:25,mem=33916kb,ncpus=40,vmem=563480kb,walltime=00:56:11
+ 
+ 

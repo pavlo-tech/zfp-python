@@ -8,7 +8,7 @@ import ctypes
 import math
 
 GOLD_DIR = "/zfs/fthpc/plascomcm/inputs/flowpastcylinder/palmetto_gold/"
-TOL = float(1E-6)
+TOL = float(sys.argv[1])
 ITER = 20
 
 

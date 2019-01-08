@@ -9,7 +9,8 @@ import math
 
 GOLD_DIR = "/zfs/fthpc/plascomcm/inputs/flowpastcylinder/palmetto_gold/"
 TOL = float(sys.argv[1])
-ITER = 20
+ITER = int(sys.argv[2])
+#20
 
 
 # https://stackoverflow.com/questions/5862915/passing-numpy-arrays-to-a-c-function-for-input-and-output
@@ -62,9 +63,9 @@ for fname in qfiles:
 			print "Shape of array          " + str(nx) + "          " + str(ny) + "           " + str(nz)
 			oArr = np.zeros(nx*ny*nz)
 			cycle(ctypes.c_void_p(iArr.ctypes.data), nx, ny, nz, ctypes.c_double(TOL), ITER, ctypes.c_void_p(oArr.ctypes.data))
-			#print iArr
 			#print "------------------"
-			#print oArr
+			print iArr
+			print oArr
 			print "=============================\n"
 
 

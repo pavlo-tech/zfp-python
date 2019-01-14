@@ -9,6 +9,13 @@
 module load gcc/4.8.1
 module load mpich
 module load python/3.4
+
 cd /home/ptriant/Research/zfp/zfp-python
-./run_all_more_iter.sh
+
+tol=1E-10
+file=/zfs/fthpc/plascomcm/inputs/pavlo_runs/plascomcm_run_data/$tol/zfp-0.5.1/1000.txt
+
+python compress_zfp.py $tol 1000 > $file
+
+
 

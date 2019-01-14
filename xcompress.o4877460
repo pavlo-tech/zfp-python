@@ -1,0 +1,17 @@
+/zfs/fthpc/plascomcm/inputs/pavlo_runs/plascomcm_run_data/1E-6/zfp-0.5.1/1000.txt
+ 
+ 
++------------------------------------------+ 
+| PALMETTO CLUSTER PBS RESOURCES REQUESTED | 
++------------------------------------------+ 
+ 
+mem=12gb,ncpus=40,walltime=240:00:00
+ 
+ 
++-------------------------------------+ 
+| PALMETTO CLUSTER PBS RESOURCES USED | 
++-------------------------------------+ 
+ 
+cpupercent=101,cput=00:47:29,mem=36564kb,ncpus=40,vmem=566172kb,walltime=00:48:03
+ 
+ 

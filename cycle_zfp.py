@@ -50,6 +50,20 @@ def copy_1d_array(a,nx,ny,nz):
 			for i in xrange(nx):
 				b[i][j][k] = a[i+ny*(j+nz*k)]
 
+	return b
+
+# prints if the values are different
+def print_difference(a,b,nx,ny,nz):
+	for k in xrange(nz):
+		for j in xrange(ny):
+			for i in xrange(nx):
+				x = a[i+ny*(j+nz*k)]
+				x_err = b[i][j][k]	
+				v = abs(x - x_err)
+				if v > TOL:
+					print "ERROR: " + str(v)
+
+
 
 # create p3d reader
 p3d = P3D.PLOT3D_FILE()
@@ -67,6 +81,9 @@ for g in xrange(2):
 		cycle(ctypes.c_void_p(iArr.ctypes.data),nx,ny,nz, ctypes.c_double(TOL), ITER, ctypes.c_void_p(oArr.ctypes.data))
 		print "=============================\n"
 		wArr = copy_1d_array(oArr,nx,ny,nz)
+
+		print_difference(iArr,wArr,nx,ny,nz)
+
 		p3d.set_var(wArr,g,cv)
 
 p3d.write_file(output_file)

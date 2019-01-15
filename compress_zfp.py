@@ -10,11 +10,11 @@ import math
 GOLD_DIR = "/zfs/fthpc/plascomcm/inputs/flowpastcylinder/palmetto_gold/"
 TOL = float(sys.argv[1])
 ITER = int(sys.argv[2])
-#20
+cycle_dir = sys.argv[3]
 
-
+#'./zfp-0.5.1/examples/simple.dll'
 # https://stackoverflow.com/questions/5862915/passing-numpy-arrays-to-a-c-function-for-input-and-output
-zfp_dll = ctypes.cdll.LoadLibrary('./zfp-0.5.1/examples/simple.dll')
+zfp_dll = ctypes.cdll.LoadLibrary(cycle_dir)
 cycle = zfp_dll.cycle
 
 '''

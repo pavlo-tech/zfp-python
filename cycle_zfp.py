@@ -16,20 +16,22 @@ import numpy as np
 import ctypes
 import math
 
-zfp_dll = ctypes.cdll.LoadLibrary('./zfp-0.5.1/examples/simple.dll')
-cycle = zfp_dll.cycle
 
 
 
 if len(sys.argv) != 5:
-	print("USAGE python cycle_zfp.py input_file output_file tolerance iterations")
+	print("USAGE python cycle_zfp.py input_file output_file tolerance iterations cycle_path")
 	sys.exit()
 
 input_file = sys.argv[1]
 output_file = sys.argv[2]
 TOL = float(sys.argv[3])
 ITER = int(sys.argv[4])
+cycle_path = sys.argv[5]
 
+# ex: './zfp-0.5.1/examples/simple.dll'
+zfp_dll = ctypes.cdll.LoadLibrary(cycle_path)
+cycle = zfp_dll.cycle
 
 def copy_3d_array(a):
 	nx, ny, nz = a.shape

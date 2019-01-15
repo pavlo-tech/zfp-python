@@ -13,9 +13,11 @@ module load python/3.4
 cd /home/ptriant/Research/zfp/zfp-python
 
 tol=1E-10
-file=/zfs/fthpc/plascomcm/inputs/pavlo_runs/plascomcm_run_data/$tol/zfp-0.5.1/1000.txt
+compressor=zfp-0.5.4
+simple_dll=./$compressor/examples/simple.dll
+file=/zfs/fthpc/plascomcm/inputs/pavlo_runs/plascomcm_run_data/$tol/$compressor/1000.txt
 
-python compress_zfp.py $tol 1000 > $file
+python compress_zfp.py $tol 1000 $simple_dll > $file
 
 
 

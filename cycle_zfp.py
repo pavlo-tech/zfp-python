@@ -19,7 +19,7 @@ import math
 
 
 
-if len(sys.argv) != 5:
+if len(sys.argv) != 6:
 	print("USAGE python cycle_zfp.py input_file output_file tolerance iterations cycle_path")
 	sys.exit()
 

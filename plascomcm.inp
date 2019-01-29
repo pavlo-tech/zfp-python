@@ -1,0 +1,727 @@
+# plascomcm.inp ... basic input file for plascomcm
+#
+# Blank lines and lines beginning with '#' are
+# ignored.
+#
+#################################################
+#                                               #
+# PROBLEM DEFINITION                            #
+#                                               #
+#################################################
+
+# Unique CASE_ID (NULL is default)
+# Used for logic flow for special cases
+CASE_ID = EX_FLOW_PAST_CYL
+
+# fluid model
+# = CNS, compressible Navier Stokes
+# = Q1D, quasi-1-D compressible Navier-Stokes
+# = LINCNS, linearized compressible Euler equations
+FLUID_MODEL = CNS
+
+# number of dimensions
+ND = 2
+
+# Reynolds number (=0.0 for inviscid)
+REYNOLDS_NUMBER = 200.0
+
+# Prandtl number
+# (Will be reset if GAS_TRANSPORT_VAR_MODEL = 2)
+PRANDTL_NUMBER = 0.72
+
+# number of active/passive scalars (default = 0)
+NUMBER_OF_SCALARS = 0
+
+# include chemical reactions? (default = FALSE)
+INCLUDE_CHEMISTRY = FALSE
+
+# Default Schmidt number (Default = 1)
+SCHMIDT_NUMBER = 1.0
+
+##################################################
+#                                                #
+# GAS MODELS                                     #
+#                                                #
+# Equation of State (GAS_EQUATION_OF_STATE):     #
+# = 0 (Ideal gas, default)                       #
+# = 2 (Thermally perfect with lookup table)      #
+# = 3 (Ideal gas, mixture)                       #
+#                                                #
+# Transport Variables (GAS_TRANSPORT_VAR_MODEL): #
+# = 0 (Power Law, default)                       #
+# = 1 (Glass and Hunt)                           #
+# = 2 (Lookup table)                             #
+#                                                #
+##################################################
+GAS_EQUATION_OF_STATE   = 0
+GAS_TRANSPORT_VAR_MODEL = 0
+DV_LOOKUP_TABLE_NAME    = Air_dv_spline.tbl
+TV_LOOKUP_TABLE_NAME    = Air_tv_spline.tbl
+
+# HDF5 I/O
+USEHDF5 = FALSE
+
+# boundary condition filename
+BC_FNAME = bc.dat
+
+# target solution (cvTarget) filename
+TARGET_FNAME = initial.q
+
+# should we read the target file at startup (not for restart) (DEFAULT = FALSE)
+# if restart, always read target file
+READ_TARGET_ON_STARTUP = TRUE
+
+# mean solution (mean) filename
+# only used if LINCNS
+MEAN_FNAME = RocFlo-CM.00000000.mean.q
+
+# Use low-memory i/o at the expense of speed? (DEFAULT=FALSE)
+# USE_LOW_MEM_IO = FALSE (output to PLOT3D files with each grid owned by one processor)
+# USE_LOW_MEM_IO = TRUE (output to PLOT3D files with each processor writing its porition)
+# USE_LOW_MEM_IO = PROCESSOR_IO (output to processor specific files; must post-process)
+USE_LOW_MEM_IO = FALSE
+
+#################################################
+#                                               #
+# GRID SECTION                                  #
+#                                               #
+#################################################
+
+# grid filename
+GRID_FNAME = grid.xyz
+
+# parallization topology (SLAB (1-D), CUBE (N-D); DEFAULT = CUBE)
+PARALLEL_TOPOLOGY = CUBE
+
+# parallization direction ( DEFAULT = pick max direction )
+PARDIR = DEFAULT
+
+# Use low-memory operator setup at expense of speed? (DEFAULT=FALSE)
+# USE_LOW_MEM_OPERATOR_SETUP = FALSE (global_iblank is constructed for each core simulataneously)
+# USE_LOW_MEM_OPERATOR_SETUP = TRUE  (global_iblank is constructed one core at a time)
+USE_LOW_MEM_OPERATOR_SETUP = FALSE
+
+# spatial discretization (EXPLICIT, IMPLICIT)
+SPACEDISC = EXPLICIT
+
+# order of spatial discretization
+# EXPLICIT: SPACEORDER = 2 => 2_1 SBP
+# EXPLICIT: SPACEORDER = 3 => 4_2 SBP
+# EXPLICIT: SPACEORDER = 4 => DRP
+# EXPLICIT: SPACEORDER = 5 => 8_4 SBP
+# IMPLICIT: SPACEORDER = 4 => 3-4-6 Pade (uses old operator fill routines, caveat emptor)
+SPACEORDER = 3
+
+# solver to use for implicit operators (GMRES, DIRECT_PENTA)
+OPERATOR_IMPLICIT_SOLVER = DIRECT_PENTA
+
+# what to do when stencils don't fit
+FIX_STENCIL_CANNOT_FIT = FALSE
+
+# override overlap value for ghostpoints (FALSE, N > 0)
+# useful for complex geometries
+# DEFAULT = FALSE
+OVERLAP_OVERRIDE = FALSE
+
+# user-supplied grid decomposition map (DEFAULT = FALSE, decomp.map)
+# useful for complex geometries
+USE_DECOMP_MAP = FALSE
+DECOMP_MAP = decomp.map
+
+# PLASCOMCM cube decomposition algorithm
+PLASCOMCM_DECOMP = FALSE
+
+# is the grid static or deforming/moving
+MOVEGRID = FALSE
+
+# use transfinite interpolation to move grid interior
+USE_TRANSFINITE_INTERP = FALSE
+
+# is the grid rigid or statically moving?
+MOTION_TYPE = RIGID
+
+# gridtype (MONOLITHIC, CHIMERA)
+GRIDTYPE = CHIMERA
+
+# Interpolation algorithm (BELLERO, NATIVE_SBI, OGEN)
+INTERP_TYPE = BELLERO
+
+# Process SAT_BLOCK_INTERFACE patches natively (DEFAULT = FALSE)
+USE_NATIVE_SBI = FALSE
+
+# BELLERO interpolation data
+XINTOUT_X_FNAME = XINTOUT.X.2D
+XINTOUT_HO_FNAME = XINTOUT.HO.2D
+
+# OGEN interpolation data
+XINTOUT_OGEN_FNAME = XINTOUT.ogen
+OGEN_ORDER_INTERPOLATION = 2
+
+# NOTE:   VOLUME_INTERSECTION = TRUE will exchange data for all volumes, including boundary, and overwrite cv
+#       BOUNDARY_INTERSECTION = TRUE will exchange data for only the boundaries and store data in cv_out
+#
+# It is recommended you use one or the other.
+VOLUME_INTERSECTION = TRUE
+BOUNDARY_INTERSECTION = FALSE
+
+# Treatment for advection terms of NS.
+# STANDARD_EULER : Standard representation of advection terms.
+# SKEW_SYMMETRIC : Skew symmetric form of advection terms.
+ADVECTION_TYPE = STANDARD_EULER
+
+# default metrictype:
+#   NONORTHOGONAL_WEAKFORM   :: expand all derivatives in the viscous terms
+#   NONORTHOGONAL_STRONGFORM :: repeated first derivatives in viscous terms
+#   CARTESIAN                :: for nonuniform, but still Cartesian, meshes
+#   STRONGFORM_NARROW        :: narrow bilinear stencils for 2nd order diagonal derivatives
+#    			     	with variable coeffiencts. Only works with 4_2 SBP schemes for now
+#				Also applying skew-symmetric formulation for the advection terms.
+METRICTYPE = NONORTHOGONAL_STRONGFORM
+
+# periodic storage type -- do we repeat data along a common line/plane?
+# NO_OVERLAP_PERIODIC : no repeated data, points 1 & N are distinct
+#    OVERLAP_PERIODIC :    repeated data, points 1 & N are NOT distinct
+#
+# Not used for this case -- see ModifyInput routine in PlasComCM
+# PERIODIC_STORAGE = OVERLAP_PERIODIC
+
+# direction periodicity (FALSE, TRUE, PLANE_PERIODIC)
+# Not used for this case -- see ModifyInput routine in PlasComCM
+# PERIODIC1 = FALSE
+# PERIODIC2 = FALSE
+# PERIODIC3 = FALSE
+
+# periodic lengths (only used for those dirs with PLANE_PERIODIC)
+# same value regardless of PERIODIC_STORAGE choice
+PERIODICL1 = 0.0
+PERIODICL2 = 0.0
+PERIODICL3 = 0.0
+
+# ad-hoc correction for discrete violation of metric identities (default = FALSE)
+USE_METRIC_IDENTITIES = FALSE
+
+# diagnostic for boundary conditions
+# resets all iblank values on the boundary and stops code
+OUTPUT_BC_AS_IBLANK = FALSE
+
+#################################################
+#                                               #
+# TIMESTEP SECTION                              #
+#                                               #
+#################################################
+
+# TIME ADVANCEMENT
+# BDF_GMRES_IMPLICIT (implicit time advancement, constructs implicit matrix)
+# IMEX_RK4 (boundary-implicit time advancement)
+# EXPLICIT_RK4 (explicit time advancement using additive ARK2 subroutine)
+# APPROXIMATE_LINEAR_OPERATOR
+# APPROXIMATE_LINEAR_OPERATOR_POWER_METHOD
+TIMESCHEME = EXPLICIT_RK4
+
+# set the value of epsilon in A(:,i) ~ (F(q+epsilon e_i)-F(q)/epsilon
+APPROXIMATE_LINEAR_OPERATOR_EPSILON = 1D-7
+
+# set the number of timestep for power iteration
+APPROXIMATE_LINEAR_OPERATOR_POWER_METHOD_STEPS = 1000
+
+# selective frequency damping
+# useful for trying to get steady state solutions to unstable problems
+SELECTIVE_FREQUENCY_DAMPING = FALSE
+SELECTIVE_FREQUENCY_DAMPING_CHI = 0.0
+SELECTIVE_FREQUENCY_DAMPING_DELTA = 1.0
+
+# Force to march in first-order Euler (implicit only)
+STEADY_STATE_SOLUTION = FALSE
+
+# Steady state solution (implicit only)
+TRUE_STEADY_STATE_SOLUTION = FALSE
+
+# maximum subiterations (implicit only)
+MAXSUBITS = 100
+
+# maximum number of iterations
+NSTEPMAX   = 15000
+
+# frequency of solution output
+#NOUTPUT = 2000
+NOUTPUT = 20
+
+# frequency of restart save
+#NRESTART = 500
+NRESTART = 2000
+
+# time marching style (CONSTANT_DT, CONSTANT_CFL)
+CFL_MODE = CONSTANT_CFL
+
+# timestep
+TIMESTEP = 1.5e-3
+
+# output sample mode {ITERATION,OUTPUT_SAMPLE_TIME}
+OUTPUT_MODE = ITERATION
+
+# sample time
+T_OUTPUT = 0.05
+
+# CFL
+CFL = 0.5
+
+#################################################
+#                                               #
+# MODELS & FILTERING                            #
+#                                               #
+#################################################
+
+# filtering (logical)
+FILTER = .FALSE.
+
+# boundary filtering (logical)
+BNDRY_FILTER_LEFT = .FALSE.
+BNDRY_FILTER_RIGHT = .FALSE.
+
+# frequency of applying filter.(CNS and EXPLICIT_RK4 only, default = 1)
+FREQ_FILTER_ITER = 10
+
+# filtering type (EXPLICIT, IMPLICIT)
+FILTERDISC = IMPLICIT
+
+# filter coefficients
+# if (FILTERDISC = IMPLICIT, -0.5 < alphaf < 0.5, BNDRY_FILTER_ALPHAF used if BNDRY_FILTER=.FALSE.)
+# if (FILTERDISC = EXPLICIT, alphaf not used)
+# FILTER_FAC : f <- (1-FILTER_FAC)f + FILTER_FAC (filter(f))
+FILTER_ALPHAF = 0.45
+BNDRY_FILTER_ALPHAF = 0.45
+FILTER_FAC    = 1.00
+
+# SAT-based artificial dissipation
+SAT_ARTIFICIAL_DISSIPATION = .FALSE.
+AMOUNT_SAT_ARTIFICIAL_DISSIPATION = 1e-2
+
+# SAT boundary parameters (larger value = stronger enforcement; minus sign taken inside code)
+AMOUNT_SAT_SIGMAI1 = 2.0
+AMOUNT_SAT_SIGMAI2 = 2.0
+
+# SAT far-field boundary parameters (larger value = stronger enforcement; minus sign taken inside code)
+# (|SIGMAI1| = |SIGMAI2} = 1/2 --- minimally dissipative)
+# (|SIGMAI1| = |SIGMAI2| = 1   --- specify total flux)
+AMOUNT_SAT_SIGMAI1_FARFIELD = 0.5
+AMOUNT_SAT_SIGMAI2_FARFIELD = 1.0
+
+# shock capturing
+# SHOCK_CAPTURE = TRUE : Updated Kawai & Lele (See Kawai, Shankar, Lele, JCP, 2010)
+SHOCK_CAPTURE = FALSE
+SHOCK_CAPTURE_HyperCmu = 0.002
+SHOCK_CAPTURE_HyperCbeta = 1.75
+SHOCK_CAPTURE_HyperCKappa = 0.01
+SHOCK_CAPTURE_CLIP = .FALSE.
+
+# sponge zone
+SPONGE_AMP = 5.0
+SPONGE_POW = 2
+
+# LES (0 = DNS, 101 = classical Smagorinsky, 200:299 = dynamic Smagorinsky)
+# 201 :: Standard dynamic LES model with test-filter from prof Bodony's thesis p168.
+# 202 :: Standard dynamic LES model with test-filter from Spyropoulos & Blaisdell (AIAA J 1996). (7-pt explicit, least-square filter)
+# 203 :: Standard dynamic LES model with test-filter from Spyropoulos & Blaisdell (AIAA J 1996). (5-pt implicit, 7-pt explicit, compromise filter)
+# 204 :: Standard dynamic LES model with test-filter from Bogey & Bailly (JCP 2004). (TFo15p-pi/2)
+# 205 :: Standard dynamic LES model with simple (1-2-1)/4 test-filter
+LES_MODEL = 0
+LES_AvgDir = averaging.inp
+LES_RATIOFILTERWIDTH = 2.0
+LES_ONCE = .FALSE.
+LES_CLIP = .FALSE.
+LES_CLIP_MAX_C = 0.1
+LES_CLIP_MAX_CI = 0.1
+LES_CLIP_MAX_PrT = 1.0
+
+###################################################
+#                                                 #
+# PLANE_WAVE INPUT                                #
+#                                                 #
+# BCIC_FREQUENCY   : Hz                           #
+# BCIC_AMPLITUDE   : dB                           #
+# BCIC_ANGLE_PHI   : deg (measure from +z)        #
+# BCIC_ANGLE_THETA : deg (measure from +x)        #
+#                                                 #
+# NOTES                                           #
+#  1. Wave of form exp{-i(wt - k . x)}            #
+#  2. Wave travels in direction of k:             #
+#     k/|k| = (sin phi cos theta,                 #
+#              sin phi sin theta,                 #
+#              cos phi)                           #
+#  3. Use 'Dimensional Reference Conditions'      #
+#     to properly nondimensionalize frequency     #
+#     and amplitude.                              #
+#                                                 #
+###################################################
+BCIC_PLANEWAVE   = FALSE
+BCIC_FREQUENCY   = 500.0
+BCIC_AMPLITUDE   = 100.0
+BCIC_ANGLE_PHI   = 180.0
+BCIC_ANGLE_THETA = 0.0
+
+######################################################
+#                                                    #
+# ACOUSTIC_SOURCE INPUT                              #
+#   Place a Gaussian-shaped, harmonic acoustic       #
+#   source in the domain.                            #
+#                                                    #
+# ACOUSTIC_SOURCE_NFREQ : number of frequencies      #
+# ACOUSTIC_SORUCE_FREQ  : "f1, f2, ..." [Hz]         #
+# ACOUSTIC_SOURCE_AMP   : "a1, a2, ..." [non-dimen.] #
+# ACOUSTIC_SOURCE_PHASE : "p1, p2, ..." [non-dimen.] #
+# ACOUSTIC_SOURCE_X0    : [non-dimensional]          #
+# ACOUSTIC_SOURCE_Y0    : [non-dimensional]          #
+# ACOUSTIC_SOURCE_Z0    : [non-dimensional]          #
+# ACOUSTIC_SOURCE_LX    : [non-dimensional]          #
+# ACOUSTIC_SOURCE_LY    : [non-dimensional]          #
+# ACOUSTIC_SOURCE_LZ    : [non-dimensional]          #
+#                                                    #
+######################################################
+ACOUSTIC_SOURCE       = FALSE
+ACOUSTIC_SOURCE_NFREQ = 2
+ACOUSTIC_SOURCE_FREQ  = "50.0, 100.0"
+ACOUSTIC_SOURCE_AMP   = "0.001, 0.001"
+ACOUSTIC_SOURCE_PHASE = "0.0, 0.0"
+ACOUSTIC_SOURCE_X0    = 1560.0
+ACOUSTIC_SOURCE_Y0    =  200.0
+ACOUSTIC_SOURCE_Z0    =    0.0
+ACOUSTIC_SOURCE_LX    =   10.0
+ACOUSTIC_SOURCE_LY    =   10.0
+ACOUSTIC_SOURCE_LZ    =    1.0
+
+# Pointwise time history
+PROBE_GET_TRACE = .FALSE.
+PROBE_NUM = 662
+PROBE_SAMPLE_RATE = 1
+PROBE_LOCATION_FILENAME = probe.pos
+
+# Inflow forcing by the linear stability theory
+LST_NUM_MODE_TEMPORAL = 6
+LST_NUM_MODE_AZIMUTHAL = 11
+LST_AMPLITUDE = 0.08
+LST_X0 = 0.0
+LST_FILENAME = LST_Qp_hat.w
+
+# Adjoint Navier-Stokes equations
+ADJOINT_NS = .FALSE.
+ADJOINT_NS_READ_NS = .TRUE.
+ADJOINT_NS_FNAME = soln_list.dat
+
+# Adjoint-based control optimization
+# When ADJOINT_OPTIMIZATION = .TRUE., ADJOINT_NS initially set to be .FALSE.
+ADJOINT_OPTIMIZATION = .FALSE.
+ADJOINT_OPTIMIZATION_TYPE = 6
+ADJOINT_OPTIMIZATION_RESTART = .FALSE.
+ADJOINT_OPTIMIZATION_FUNCTIONAL = FUNCTIONAL_SOUND
+ADJOINT_NS_FNAME_MEAN = RocFlo-CM.target.q
+ADJOINT_OPTIMIZATION_CONTROL = CONTROL_INTERNAL_ENERGY
+ADJOINT_OPTIMIZATION_CONSTRAINT = CONTROL_UNCONSTRAINED
+ADJOINT_OPTIMIZATION_AXIS_OF_ROT = 0
+ADJOINT_OPTIMIZATION_EPS = 1.0E-5
+ADJOINT_OPTIMIZATION_DEPS = 1.0E-6
+ADJOINT_OPTIMIZATION_DBRENT_EPS = 1.0E-2
+ADJOINT_OPTIMIZATION_INIT_ALPHA = 0.01
+ADJOINT_OPTIMIZATION_CG_MAXIT   = 50
+ADJOINT_OPTIMIZATION_DBRENT_MAXIT = 100
+
+# ... Mimic Volumetric drag found in Abaqus
+VOLUMETRIC_DRAG = FALSE
+VOLUMETRIC_DRAG_COEFFICIENT = 0.0
+
+# PRIMARY DIMENSIONAL REFERENCE CONDITIONS
+# COUPLED SIMULATION [K,kg/m^3,J/(kg.K),m,J/(kmol.K)]
+# VALUES WILL NOT BE RESET
+LENGTH_REFERENCE                = 1.0
+TEMPERATURE_REFERENCE           = 298.0
+DENSITY_REFERENCE               = 1.185140392204566
+SPECIFIC_GAS_CONSTANT_REFERENCE = 286.9
+UNIVERSAL_GAS_CONSTANT          = 8314.0
+
+# SECONDARY DIMENSIONAL CONDITIONS
+# [Pa, ., m/s]
+# WILL BE RESET IF GAS_EQUATION_OF_STATE = 2
+PRESSURE_REFERENCE    = 101325.0
+GAMMA_REFERENCE       = 1.401513467320151
+SNDSPD_REFERENCE      = 347.1282183862326
+
+# ISOTHERMAL WALL TEMPERATURE
+# boundary conditions 22 and 52
+# [K]
+BCIC_WALL_TEMP        = 298.0
+
+#########################################################
+#
+# FINITE_VOLUME FORMULATION
+#
+# Use the following for finite volume evaluation of the
+# inviscid fluxes; the viscous fluxes are still computed
+# using finite differences.
+#
+# NOTE: The code now uses a Roe-based scheme following
+# Einfeldt's et al formulation
+# (JCP, Vol. 92, pp. 273--295, 1991)
+#
+# FV_RECONSTRUCTION_SCHEME =
+#   PIECE_CNST - locally constant values in the cell
+#   THIRD_ORDER_MUSCL - locally parabolic reconstruction
+#
+#########################################################
+# SPECIFYING WHICH GRIDS ARE FV OR FD
+# EXAMPLE OF SYNTAX --> FV_GRID_ARRAY = 110 (means the first two grids are FV and the last is FD)
+FV_GRID_ARRAY = 0
+FV_RECONSTRUCTION_SCHEME = PIECE_CNST
+
+#######################################################
+#
+#         IMPLICIT PARAMETERS
+#
+#######################################################
+DTAU_DT_RATIO = 11000.00
+DTAU_DECREASE_FACTOR= 0.90
+DTAU_DIVERGENCE_THRESHOLD = 20
+PRECONDITIONER_LU = 100.0
+FREE_STREAM_MACH = 1.0
+DTAU_INCREASE_THRESHOLD = 10000
+DTAU_INCREASE_FACTOR = 1.00
+WRITE_SUBITERATION_DATA = FALSE
+IMPLICIT_SAT_ARTIFICIAL_DISSIPATION = FALSE
+AMOUNT_IMPLICIT_SAT_ARTIFICIAL_DISSIPATION = 1e0
+LHS_FILTER = TRUE
+LHS_FILTER_FAC = 1.0
+LHS_FILTER_ALPHAF = 0.499
+
+# HYPRE PARAMETERS
+# -- INTEGER PARAMETERS
+# Preconditioners:
+# 0) None
+# 1) Euclid
+# 2) ParaSails
+# 3) BoomerAMG
+# 4) BOOMERAMG SOLVER
+PRECONDITIONER = 1
+GMRES_MAX_ITERS = 10000
+KRYLOV_DIMENSION = 12
+EUCLID_LEVEL = 4
+BLOCK_JACOBI = 1
+GMRES_PRINT_LEVEL = 0
+PRECOND_PRINT_LEVEL = 0
+PARASAILS_NLEVELS = 20
+
+# -- REAL PARAMETERS
+GMRES_TOLERANCE = 1E-14
+PARASAILS_THRESHOLD = 0.1
+PARASAILS_FILTERLEVEL = 0.05
+
+###########################################################
+#                                                         #
+# Thermomechanical Solver (must use CFL_MODE=CONSTANT_DT) #
+#                                                         #
+# USE_THERMOMECHANICAL_SOLVER = 0, Fluid-Only             #
+#                             = 1, Thermal                #
+#                             = 2, Structural             #
+#                             = 3, Thermomechanical       #
+#                                                         #
+###########################################################
+USE_THERMOMECHANICAL_SOLVER = 0
+NO_FLUID = FALSE
+NUMBER_TM_PROCESSORS = 1
+SOLID_GRID_FNAME = solid.grd
+
+# element type (LINEAR, QUADRATIC)
+ELEMENT_TYPE = QUADRATIC
+
+# parallization topology (SLAB (1-D), CUBE (N-D); DEFAULT = CUBE)
+TM_PARALLEL_TOPOLOGY = SLAB
+
+# parallization direction ( DEFAULT = pick max direction )
+TM_PARDIR = DEFAULT
+
+# user-supplied grid decomposition map (DEFAULT = FALSE, TMdecomp.map)
+# useful for complex geometries
+USE_TM_DECOMP_MAP = FALSE
+TM_DECOMP_MAP = TMdecomp.map
+
+# decompose for linear solve with ParMetis
+USE_PARMETIS = TRUE
+
+# boundary condition filename
+THERMOMECHANICAL_BC_FNAME = TMbc.dat
+PINNED_BOUNDARY_CONDITIONS = FALSE
+
+# temporal advancement
+THERMAL_TIME_SCHEME = DYNAMIC_SOLN
+STRUCTURAL_TIME_SCHEME = STEADY_SOLN
+STRUCTURAL_FREQUENCY = 1
+THERMAL_FREQUENCY = 100
+MAX_TM_SUBITS = 20
+
+# constitutive model
+# SVK: Saint-Venant Kirchhoff -- Simple, accurate for stiff materialls only
+# NH : modified Neo-Hookean   -- More general, applicable to soft, rubber-like materials
+CONSTITUTIVE_MODEL = NH
+
+# petsc
+# NOTE: solver parameters set in PETScOptions.txt
+PETSC_REL_TOLERANCE = 1D-5
+
+# restart
+RESTART_TM_SOLN = FALSE
+# filename to restart from
+TM_RESTART_FNAME=RocFlo-CM.TM.00100000.q
+# velocity and acceleration data in dynamic structural simulation
+TM_RESTART_AUX_FNAME=RocFlo-CM.TM.00100000.dq
+
+SAVE_SOLID_DATA=FALSE
+
+# initial temperature
+TM_INITIAL_TEMPERATURE = 298.0
+
+# material properties
+# structural
+# density
+TM_DENSITY = 8000.0
+# Young's modulus
+YOUNGS_MODULUS = 200.0E9
+# Poisson's ratio
+POISSON_RATIO = .27
+# thermal
+# thermal conductivity
+THERMAL_CONDUCTIVITY = 16.26
+# specific heat capacity
+SPECIFIC_HEAT = 500.0
+# thermal expansion coefficient
+THERMAL_EXPANSION = 5.33E-6
+
+# temperature dependent mechanical properties
+TEMPERATURE_DEPENDENT = FALSE
+MATERIAL_PROP_FNAME = MaterialData.tbl
+
+###################################################
+#                                                 #
+# Instability Wave Input                          #
+#                                                 #
+# BCIC_EIGENFUNCTION : PSE/TRUE/FALSE             #
+# BCIC_EIGENFUNCTION_FNAME : Binary file          #
+# BCIC_EIGENFUNCTION_IMAX : No. of x-points       #
+#                                                 #
+###################################################
+BCIC_EIGENFUNCTION = FALSE
+BCIC_EIGENFUNCTION_FNAME = ../IC.noguess/sl0.pert.1
+BCIC_EIGENFUNCTION_IMAX = 20
+
+#####################################################
+#                                                   #
+# Flow initialization                               #
+# INITFLOW_NAME = UNIFORM :: uniform flow           #
+#               = ARN2    :: nozzle                 #
+#               = LINER-1 :: linear BL              #
+#               = LINER-2 :: Polhausen BL           #
+#               = POHLHAUSEN-BL ::
+#               = ROTOR-STATOR ::                   #
+#               = NASA_JET :: NASA Jet              #
+#               = CAA2_1_2 :: CAA Benchmark 1 1-2   #
+#               = CAA1_4_1 :: CAA Benchmark 2 4-1   #
+#               = CAA3_1_2 :: CAA Benchmark 3 1-2   #
+#               = ISENTROPIC_PULSE ::               #
+#               = ENTROPICPULSE ::                  #
+#               = GAUSSIAN_PULSE ::                 #
+#               = SINUSOIDAL_PULSE ::               #
+#               = CONVECTING_VORTEX ::              #
+#               = 1D_SHOCK ::                       #
+#               = POST-SHOCK ::                     #
+#               = QUIESCENT ::                      #
+#               = UNIFORM_FLOW_WITH_GAUSSIAN_SCALAR #
+#               = PSAAP2_2D                         #
+#                                                   #
+#  Mean flow in direction of normal:                #
+#      norm = (sin theta cos phi,                   #
+#              sin theta sin phi,                   #
+#              cos theta)                           #
+#                                                   #
+#####################################################
+# Flow Initialization Parameters
+INITFLOW_NAME      = UNIFORM
+INITFLOW_MACH      = 0.0
+INITFLOW_DELTA     = 1.0
+INITFLOW_XLOC      = 0
+INITFLOW_YLOC      = 0
+INITFLOW_ZLOC      = 0
+INITFLOW_XWIDTH    = 0
+INITFLOW_YWIDTH    = 0
+INITFLOW_ZWIDTH    = 0
+INITFLOW_AMPLITUDE = 0
+INITFLOW_FREQUENCY = 0
+INITFLOW_RADIUS    = 0
+INITFLOW_THETA     = 90
+INITFLOW_PHI       = 0
+INITFLOW_RPM       = 0
+INITFLOW_TRAMP     = 1.0
+INITFLOW_TSTART    = 0.0
+INITFLOW_DELTASTAR = 1.0
+
+# input for post-processing tool, rflocm_post
+# (only used when rflocm_post is run)
+# quantities to calculate
+SURFACE_TRACTION   = FALSE
+SURFACE_YPLUS      = FALSE
+SURFACE_HEAT_FLUX  = FALSE
+REYNOLDS_ANALOGY   = FALSE
+VOLUME_RHS         = FALSE
+VOLUME_TEMPERATURE = FALSE
+VOLUME_VORTICITY   = FALSE
+VOLUME_DILATATION  = FALSE
+
+###################################################
+#                                                 #
+# Plasma Actuator Parameters                      #
+#                                                 #
+# USE_PLASMA_ACTUATORS = [TRUE/FALSE]             #
+# ACTUATOR_LOC_X         [in m]                   #
+# ACTUATOR_LOC_Y         [in m]                   #
+# ACTUATOR_LOC_Z         [in m]                   #
+# ACTUATOR_RADIUS        [in m]                   #
+# ACTUATOR_LENGTH        [in m]                   #
+# ACTUATOR_EFFICIENCY    [non-dimensional]        #
+# ACTUATOR_MAX_POWER     [in Watts]               #
+# ACTUATOR_DUTY_CYCLE    [non-dimensional]        #
+# ACTUATOR_FREQUENCY     [in Hertz]               #
+# ACTUATOR_DELAY         [in seconds]             #
+# ACTUATOR_RISE_TIME     [in seconds]             #
+# ACTUATOR_FALL_TIME     [in seconds]             #
+# ACTUATOR_SIGMA_XY      [non-dimensional]        #
+# ACTUATOR_SIGMA_Z       [non-dimensional]        #
+#                                                 #
+###################################################
+USE_PLASMA_ACTUATORS = FALSE
+ACTUATOR_LOC_X       = 0.0
+ACTUATOR_LOC_Y       = -0.8E-3
+ACTUATOR_LOC_Z       = 0.0
+ACTUATOR_RADIUS      = 0.3E-3
+ACTUATOR_LENGTH      = 2.0E-3
+ACTUATOR_EFFICIENCY  = 1.0
+ACTUATOR_MAX_POWER   = 40.0
+ACTUATOR_DUTY_CYCLE  = 0.2
+ACTUATOR_FREQUENCY   = 5000.0
+ACTUATOR_DELAY       = 0.0
+ACTUATOR_RISE_TIME   = 0.7E-6
+ACTUATOR_FALL_TIME   = 0.2E-6
+ACTUATOR_SIGMA_XY    = 20
+ACTUATOR_SIGMA_Z     = 5
+
+###################################################
+#                                                 #
+# Data checking                                   #
+#                                                 #
+###################################################
+DATALIMIT_CHECKING_LEVEL    = 0
+DATALIMIT_FAIL_ON_VIOLATION = .FALSE.
+DATALIMIT_LOWER_RHO         = 0.0
+DATALIMIT_LOWER_RHO         = 20.0
+DATALIMIT_SPEED             = 7.0
+DATALIMIT_LOWER_ENERGY      = -10.0
+DATALIMIT_UPPER_ENERGY      =  10.0
+
+# RHS FORCING TERMS FOR TEMPORAL SIMULATION
+TEMPORAL_RHS_FORCING = FALSE
+STREAMWISE_DIRECTION = 1
+WALL_NORMAL_DIRECTION = 2

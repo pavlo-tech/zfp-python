@@ -15,7 +15,7 @@ OUTPUT_DIR = "/zfs/fthpc/plascomcm/inputs/pavlo_runs/Compressor Plots/"
 
 CompressorNames = {"sz1.3":"SZ 1.3","sz1.4.9":"SZ 1.4.9 Beta",
 "sz1.4.11":"SZ 1.4.11", "sz2.0": "SZ 2.0", 
-"zfp-0.5.1":"ZFP 0.5.1"}
+"zfp-0.5.1":"ZFP 0.5.1", "zfp-0.4.1":"ZFP 0.4.1", "zfp-0.5.4":"ZFP 0.5.4"}
 CVNames = ["Compression Factor", "Compression Time", "Compression Time STDDEV", "Decompression Time", "Decompression Time STDDEV"]
 
 numPoints = 5000

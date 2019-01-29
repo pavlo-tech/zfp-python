@@ -1,0 +1,41 @@
+#
+# Basic boundary condition file for PlasComCM
+#
+# FD = finite difference
+# FV = finite volume
+#
+# ibType
+# ======
+#     00     OUTER_BOUNDARY (FD)
+#     21     SAT_SLIP_ADIABATIC_WALL (FD)
+#     22     SAT_NOSLIP_ISOTHERMAL_WALL (FD)
+#     23     SAT_NOSLIP_ADIABATIC_WALL (FD)
+#     24     SAT_FAR_FIELD (FD)
+#     25     SAT_BLOCK_INTERFACE (FD)
+#     31     NSCBC_INFLOW_VELOCITY_TEMPERATURE (FD)
+#     32     NSCBC_INFLOW_VELOCITY_TEMPERATURE_FROM_SPONGE (FD)
+#     41     NSCBC_OUTFLOW_PERFECT_NONREFLECTION (FD, FV)
+#     42     NSCBC_OUTFLOW_PERFECT_REFLECTION (FD, FV)
+#     51     NSCBC_WALL_ADIABATIC_SLIP (FD, FV)
+#     52     NSCBC_WALL_ISOTHERMAL_NOSLIP (FD, FV)
+#     61     NSCBC_SUBSONIC_INFLOW (FD)
+#     62     NSCBC_SUPERSONIC_INFLOW (FD, FV)
+#     73     PERIODICITY (FV)
+#     91     FV_DIRICHLET (FV)
+#     92     FV_NEUMANN (FV)
+#     93     FV_SYMMETRY (FV)
+#     94     FV_BLOCK_INTERFACE (FV)
+#     95     FV_BLOCK_INTERFACE_PERIODIC (FV)
+#     99     SPONGE (FD, FV)
+#
+# Grid ibType ibDir   is    ie    js    je     ks    ke
+# ==== ====== =====  ====  ====  ====  ====   ====  ====
+     1    24     1     1     1     1    -1     1    -1
+     1    99     1     1     6     1    -1     1    -1
+     1    24    -1    -1    -1     1    -1     1    -1
+     1    99    -1    -6    -1     1    -1     1    -1
+     1    24     2     1    -1     1     1     1    -1
+     1    99     2     1    -1     1     6     1    -1
+     1    24    -2     1    -1    -1    -1     1    -1
+     1    99    -2     1    -1    -6    -1     1    -1
+     2    22     2     1    -1     1     1     1    -1

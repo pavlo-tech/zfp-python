@@ -78,24 +78,46 @@ for g in xrange(2):
 		print "\n============================="
 		print "Compressing CV=           " + str(cv)
 		grid = p3d.get_var(g,cv)
-
-		#nx,ny,nz,iArr = copy_3d_array(grid)
-		#iArr = grid.ravel()
-		#x=np.reshape(iArr, (nx,ny,nz))
-		#print "\nreshape: " , np.max(np.abs(grid-x))
+		'''
+		grid = np.zeros((3,3,1))
+		k=1
+		for i in [0,1,2]:
+			for j in [0,1,2]:
+				grid[i][j][0] = k
+				k += 1
+		print grid
+		'''
+		#nx,ny,nz,rArr=copy_3d_array(grid) 
 		nx,ny,nz = grid.shape
-		#grid = grid.flatten()
-		iArr = grid.flatten(order='C')
-		
-		oArr = np.zeros(nx*ny*nz)
+		rArr = np.zeros(nx*ny*nz)
+		p = 0
+		for k in xrange(nz):
+			for j in xrange(ny):
+				for i in xrange(nx):
+					rArr[p] = grid[i][j][k]
+					p += 1
+		print rArr
+		#rArr = rArr.astype(np.float64)		# VERIFY 64 bit
+		iArr = rArr.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+
+		#nx,ny,nz,nArr=copy_3d_array(np.zeros((nx,ny,nz)))
+		nArr = np.zeros(nx*ny*nz)
+		#nArr = nArr.astype(np.float64) 
+		oArr = nArr.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+
 		# THE BUG IS PROBABLY IN ONE OF THESE POINTERS OR .ctypes.data		
 		print "Shape of array          " + str(nx) + "          " + str(ny) + "           " + str(nz)
-		cycle(ctypes.c_void_p(iArr.ctypes.data),nx,ny,nz, ctypes.c_double(TOL), ITER, ctypes.c_void_p(oArr.ctypes.data))
+		cycle(iArr,nx,ny,nz, ctypes.c_double(TOL), ITER, oArr)
 		print "=============================\n"
-	
-
+		print nArr
+		grid1= np.copy(grid)
 		#print "\n\nlossy: " , np.max(np.abs(iArr-oArr))
-
+		p = 0
+		for k in xrange(nz):
+			for j in xrange(ny):
+				for i in xrange(nx):
+					grid[i][j][k] = nArr[p]
+					p += 1
 	
 		#wArr = copy_1d_array(oArr,nx,ny,nz)
 		#wArr = np.copy(np.reshape(oArr, (nx,ny,nz), order='C'), order='F')
@@ -104,8 +126,9 @@ for g in xrange(2):
 		#wArr = copy_1d_array(oArr,nx,ny,nz)
 
 		#print np.max(np.abs(iArr-oArr))
-		#print np.max(np.abs(grid.ravel()-wArr.ravel()))
-		#p3d.set_var(wArr,g,cv)
+		#print type(iArr)
+		print np.max(np.abs(grid-grid1))
+		p3d.set_var(grid,g,cv)
 
 p3d.write_file(output_file)
 

@@ -30,7 +30,7 @@ def getInputFile(i, iter):
 
 BASE_DIR = "/zfs/fthpc/"
 ZFP = "python /home/ptriant/Research/zfp/zfp-python/cycle_zfp.py "
-ZFP_DLL = "/home/ptriant/Research/zfp/zfp-python/zfp-0.5.1/examples/simple.dll"
+ZFP_DLL = "/home/ptriant/Research/zfp/zfp-python/zfp-0.4.1/examples/simple.dll"
 ERR_TOL = 1e-5
 INP_IN = "master.inp"
 INP_OUT = "plascomcm.inp"

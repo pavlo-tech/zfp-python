@@ -59,13 +59,29 @@ for fname in qfiles:
 			print "\n============================="
 			print "Compressing CV=           " + str(cv)
 			grid = p3d.get_var(g,cv)
-			nx,ny,nz,iArr = copy_3d_array(grid)
+
+			nx,ny,nz = grid.shape
+			rArr = np.zeros(nx*ny*nz)
+			p = 0
+			for k in xrange(nz):
+				for j in xrange(ny):
+					for i in xrange(nx):
+						rArr[p] = grid[i][j][k]
+						p += 1
+			iArr = rArr.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+			nArr = np.zeros(nx*ny*nz)
+			oArr = nArr.ctypes.data_as(ctypes.POINTER(ctypes.c_double))
+
+			#nx,ny,nz,iArr = copy_3d_array(grid)
 			print "Shape of array          " + str(nx) + "          " + str(ny) + "           " + str(nz)
-			oArr = np.zeros(nx*ny*nz)
-			cycle(ctypes.c_void_p(iArr.ctypes.data), nx, ny, nz, ctypes.c_double(TOL), ITER, ctypes.c_void_p(oArr.ctypes.data))
+			
+			cycle(iArr,nx,ny,nz, ctypes.c_double(TOL), ITER, oArr)
+			
+			#oArr = np.zeros(nx*ny*nz)
+			#cycle(ctypes.c_void_p(iArr.ctypes.data), nx, ny, nz, ctypes.c_double(TOL), ITER, ctypes.c_void_p(oArr.ctypes.data))
 			#print "------------------"
-			print iArr
-			print oArr
+			#print iArr
+			#print oArr
 			print "=============================\n"
 
 

@@ -28,6 +28,7 @@ output_file = sys.argv[2]
 TOL = float(sys.argv[3])
 ITER = int(sys.argv[4])
 cycle_path = sys.argv[5]
+print cycle_path
 
 # ex: './zfp-0.5.1/examples/simple.dll'
 zfp_dll = ctypes.cdll.LoadLibrary(cycle_path)
